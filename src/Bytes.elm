@@ -2,8 +2,8 @@ module Bytes
     exposing
         ( Bytes
         , empty
-        , fromList
         , fromBytes
+        , fromList
         , fromUTF8
         , fromHex
         , isBytes
@@ -21,9 +21,9 @@ immutable `Array` type limited to values of `Int` in the range of `0` - `255`.
 # Bytes
 @docs Bytes
 
-# String to Bytes
+# Creating Bytes
 
-@docs fromBytes, fromUTF8, fromHex
+@docs empty, fromBytes, fromList, fromUTF8, fromHex
 
 # Basics
 
@@ -62,6 +62,22 @@ empty =
     [] |> Array.fromList |> ByteArray
 
 
+{-| Converts a `String` (`unescape(encodeURI("foo"))`), where each `Char`
+represents a single `Byte`, to `Bytes`. It's your responsability to ensure that
+the `String` complies with this constraint, see `Bytes.isBytes`:
+
+    Bytes.fromList [195, 166, 32, 195, 184, 32, 195, 165, 32, 195, 177]
+        == Bytes.fromBytes "Ã¦ Ã¸ Ã¥ Ã±"
+-}
+fromBytes : String -> Bytes
+fromBytes str =
+    str
+        |> String.toList
+        |> List.map (\c -> c |> toCode)
+        |> Array.fromList
+        |> ByteArray
+
+
 {-| Converts a `List` of `Int` to `Bytes` if they are all in the range `0 - 255`
 otherwise it will return and error message:
 
@@ -79,22 +95,6 @@ fromList numbers =
 
         False ->
             Err "Invalid numbers! Numbers must be between 0 and 255"
-
-
-{-| Converts a `String` (`unescape(encodeURI("foo"))`), where each `Char`
-represents a single `Byte`, to `Bytes`. It's your responsability to ensure that
-the `String` complies with this constraint, see `Bytes.isBytes`:
-
-    Bytes.fromList [195, 166, 32, 195, 184, 32, 195, 165, 32, 195, 177]
-        == Bytes.fromBytes "Ã¦ Ã¸ Ã¥ Ã±"
--}
-fromBytes : String -> Bytes
-fromBytes str =
-    str
-        |> String.toList
-        |> List.map (\c -> c |> toCode)
-        |> Array.fromList
-        |> ByteArray
 
 
 {-| Converts a `UTF-8` `String` to `Bytes`:
