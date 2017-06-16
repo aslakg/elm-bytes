@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
     "summary": "Bytes type representation in Elm",
-    "repository": "https://github.com/spisemisu/elm-utf8.git",
+    "repository": "https://github.com/spisemisu/elm-bytes.git",
     "license": "LGPL-3.0",
     "source-directories": [
         "src"
