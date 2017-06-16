@@ -1,0 +1,3 @@
+#!/bin/sh
+
+elm-test
