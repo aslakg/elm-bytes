@@ -54,8 +54,8 @@ type Bytes
 
 {-| Returns an empty `Bytes` container. To be used with `Result.withDefault`:
 
-    Bytes.fromList [256] |> Result.withDefault empty
-        == Bytes.empty
+    Bytes.empty
+        == (Bytes.fromList [256] |> Result.withDefault empty)
 -}
 empty : Bytes
 empty =
