@@ -3,9 +3,10 @@ module Bytes
         ( Bytes
         , empty
         , fromBytes
-        , fromList
-        , fromUTF8
         , fromHex
+        , fromList
+        , fromURI
+        , fromUTF8
         , isBytes
         , isEmpty
         , isHex
@@ -23,7 +24,7 @@ immutable `Array` type limited to values of `Int` in the range of `0` - `255`.
 
 # Creating Bytes
 
-@docs empty, fromBytes, fromList, fromUTF8, fromHex
+@docs empty, fromBytes, fromHex, fromList, fromURI, fromUTF8
 
 # Basics
 
@@ -78,6 +79,21 @@ fromBytes str =
         |> ByteArray
 
 
+{-| Converts a `String`, where each `(Char, Char)` tuple represents a single
+`Hex` number, to `Bytes`. It's your responsability to ensure that the `String`
+complies with this constraint, see `Bytes.isHex`:
+
+    Bytes.fromHex "7FFF"
+        == Bytes.fromList [127, 255]
+
+    Bytes.fromHex "7fff"
+        == Bytes.fromList [127, 255]
+-}
+fromHex : String -> Bytes
+fromHex str =
+    str |> hexToString |> fromBytes
+
+
 {-| Converts a `List` of `Int` to `Bytes` if they are all in the range `0 - 255`
 otherwise it will return and error message:
 
@@ -97,7 +113,29 @@ fromList numbers =
             Err "Invalid numbers! Numbers must be between 0 and 255"
 
 
-{-| Converts a `UTF-8` `String` to `Bytes`:
+{-| Converts an `URI` (Uniform Resource Identifier) `String` to `Bytes`:
+
+    Bytes.fromUri "%C3%A6%20%C3%B8%20%C3%A5%20%C3%B1"
+        == Bytes.fromList [195, 166, 32, 195, 184, 32, 195, 165, 32, 195, 177]
+-}
+fromURI : String -> Bytes
+fromURI str =
+    str
+        |> Regex.find All (Regex.regex "%[a-zA-Z0-9][a-zA-Z0-9]|.")
+        |> List.map
+            (\{ match } ->
+                case match |> String.startsWith "%" of
+                    True ->
+                        match |> String.dropLeft 1 |> hexToString
+
+                    False ->
+                        match
+            )
+        |> List.foldl (\c a -> a ++ c) ""
+        |> fromBytes
+
+
+{-| Converts an `UTF-8` `String` to `Bytes`:
 
     Bytes.fromUTF8 "æ ø å ñ"
         == Bytes.fromList [195, 166, 32, 195, 184, 32, 195, 165, 32, 195, 177]
@@ -117,21 +155,6 @@ fromUTF8 str =
             |> unescape two twoMultiToSingle
             |> unescape three threeMultiToSingle
             |> fromBytes
-
-
-{-| Converts a `String`, where each `(Char, Char)` tuple represents a single
-`Hex` number, to `Bytes`. It's your responsability to ensure that the `String`
-complies with this constraint, see `Bytes.isHex`:
-
-    Bytes.fromHex "7FFF"
-        == Bytes.fromList [127, 255]
-
-    Bytes.fromHex "7fff"
-        == Bytes.fromList [127, 255]
--}
-fromHex : String -> Bytes
-fromHex str =
-    str |> hexToString |> fromBytes
 
 
 {-| Determine if each `Char` in a `String` represents a single `Byte`:
