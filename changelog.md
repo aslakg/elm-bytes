@@ -1,3 +1,11 @@
+# 1.1.0
+
+### MINOR change
+
+  * Added the following functions to `Bytes`:
+
+	fromURI : String -> Bytes
+
 # 1.0.0
 
 ### Initial release

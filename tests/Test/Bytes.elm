@@ -48,20 +48,28 @@ tests =
                             [ 195, 166, 32, 195, 184, 32, 195, 165, 32, 195, 177 ]
                             |> Result.withDefault empty
                         )
-        , test "Converts a `String` to `Bytes`" <|
-            \() ->
-                Bytes.fromUTF8 "æ ø å ñ"
-                    |> Expect.equal
-                        (Bytes.fromList
-                            [ 195, 166, 32, 195, 184, 32, 195, 165, 32, 195, 177 ]
-                            |> Result.withDefault empty
-                        )
         , test "Converts a `Hex` `String` to `Bytes`" <|
             \() ->
                 Bytes.fromHex "7FFF"
                     |> Expect.equal
                         (Bytes.fromList
                             [ 127, 255 ]
+                            |> Result.withDefault empty
+                        )
+        , test "Converts an `URI` `String` to `Bytes`" <|
+            \() ->
+                Bytes.fromURI "%C3%A6%20%C3%B8%20%C3%A5%20%C3%B1"
+                    |> Expect.equal
+                        (Bytes.fromList
+                            [ 195, 166, 32, 195, 184, 32, 195, 165, 32, 195, 177 ]
+                            |> Result.withDefault empty
+                        )
+        , test "Converts an `UTF-8` `String` to `Bytes`" <|
+            \() ->
+                Bytes.fromUTF8 "æ ø å ñ"
+                    |> Expect.equal
+                        (Bytes.fromList
+                            [ 195, 166, 32, 195, 184, 32, 195, 165, 32, 195, 177 ]
                             |> Result.withDefault empty
                         )
         , test "Determine if each `Char` in a `String` represents a single `Byte`" <|
