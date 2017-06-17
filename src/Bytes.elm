@@ -66,8 +66,8 @@ empty =
 represents a single `Byte`, to `Bytes`. It's your responsability to ensure that
 the `String` complies with this constraint, see `Bytes.isBytes`:
 
-    Bytes.fromList [195, 166, 32, 195, 184, 32, 195, 165, 32, 195, 177]
-        == Bytes.fromBytes "Ã¦ Ã¸ Ã¥ Ã±"
+    Bytes.fromBytes "Ã¦ Ã¸ Ã¥ Ã±"
+        == Bytes.fromList [195, 166, 32, 195, 184, 32, 195, 165, 32, 195, 177]
 -}
 fromBytes : String -> Bytes
 fromBytes str =
@@ -99,8 +99,8 @@ fromList numbers =
 
 {-| Converts a `UTF-8` `String` to `Bytes`:
 
-    Bytes.fromList [195, 166, 32, 195, 184, 32, 195, 165, 32, 195, 177]
-        == Bytes.fromUTF8 "æ ø å ñ"
+    Bytes.fromUTF8 "æ ø å ñ"
+        == Bytes.fromList [195, 166, 32, 195, 184, 32, 195, 165, 32, 195, 177]
 -}
 fromUTF8 : String -> Bytes
 fromUTF8 str =
@@ -123,11 +123,11 @@ fromUTF8 str =
 `Hex` number, to `Bytes`. It's your responsability to ensure that the `String`
 complies with this constraint, see `Bytes.isHex`:
 
-    Bytes.fromList [127, 255]
-        == Bytes.fromBytes "7FFF"
+    Bytes.fromHex "7FFF"
+        == Bytes.fromList [127, 255]
 
-    Bytes.fromList [127, 255]
-        == Bytes.fromBytes "7fff"
+    Bytes.fromHex "7fff"
+        == Bytes.fromList [127, 255]
 -}
 fromHex : String -> Bytes
 fromHex str =
@@ -135,6 +135,10 @@ fromHex str =
 
 
 {-| Determine if each `Char` in a `String` represents a single `Byte`:
+
+    Bytes.isBytes "Ã¦ Ã¸ Ã¥ Ã±"
+        |> Expect.equal True
+
 -}
 isBytes : String -> Bool
 isBytes str =
@@ -145,6 +149,9 @@ isBytes str =
 
 
 {-| Determine if the `Bytes` container is empty:
+
+    Bytes.isEmpty Bytes.empty
+        |> Expect.equal True
 -}
 isEmpty : Bytes -> Bool
 isEmpty (ByteArray numbers) =
@@ -152,6 +159,9 @@ isEmpty (ByteArray numbers) =
 
 
 {-| Determine if all `Char` in a `String` are `HexDigits`:
+
+    Bytes.isHex "7FFF"
+        |> Expect.equal True
 -}
 isHex : String -> Bool
 isHex str =
@@ -161,6 +171,12 @@ isHex str =
 
 
 {-| The number of the `Bytes`:
+
+    Bytes.fromList
+        [ 127, 255 ]
+        |> Result.withDefault empty
+        |> Bytes.length
+        |> Expect.equal 2
 -}
 length : Bytes -> Int
 length (ByteArray numbers) =
@@ -168,6 +184,12 @@ length (ByteArray numbers) =
 
 
 {-| Creates an `Array` of `Int` from `Bytes`:
+
+    Bytes.fromList
+        [ 127, 255 ]
+        |> Result.withDefault empty
+        |> Bytes.toArray
+        |> Expect.equal ([ 127, 255 ] |> Array.fromList)
 -}
 toArray : Bytes -> Array Int
 toArray (ByteArray numbers) =
@@ -175,6 +197,12 @@ toArray (ByteArray numbers) =
 
 
 {-| Creates a `List` of `Int` from `Bytes`:
+
+    Bytes.fromList
+        [ 127, 255 ]
+        |> Result.withDefault empty
+        |> Bytes.toList
+        |> Expect.equal [ 127, 255 ]
 -}
 toList : Bytes -> List Int
 toList (ByteArray numbers) =
@@ -183,6 +211,12 @@ toList (ByteArray numbers) =
 
 {-| Creates a `String` (`unescape(encodeURI("foo"))`), where each `Char`
 represents a single `Byte`, from `Bytes`:
+
+    Bytes.fromList
+        [ 195, 166, 32, 195, 184, 32, 195, 165, 32, 195, 177 ]
+        |> Result.withDefault empty
+        |> Bytes.toString
+        |> Expect.equal "Ã¦ Ã¸ Ã¥ Ã±"
 -}
 toString : Bytes -> String
 toString (ByteArray numbers) =
