@@ -2,9 +2,25 @@
 
 ### MINOR change
 
+  * Added the following types to `Bytes`:
+  
+  Byte - represent a single byte, useful for safe byte to byte transforms
+  
+  Hex -> hexadecimal digits, used to create a single byte in a type safe way
+  
   * Added the following functions to `Bytes`:
   
   append : Bytes -> Bytes -> Bytes
+
+  byte : Hex -> Hex -> Byte
+  
+  map : (Byte -> Byte) -> Bytes -> Bytes
+  
+  and : Byte -> Byte -> Byte
+
+  or : Byte -> Byte -> Byte
+
+  xor : Byte -> Byte -> Byte
 
 # 1.1.0
 

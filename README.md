@@ -11,18 +11,26 @@ or specific function(s):
 
     import Bytes 
         exposing 
-            (Bytes
+            ( Byte
+            , Bytes
+            , Hex(..)
+            , and
             , append
+            , byte
             , empty
-            , fromList
             , fromBytes
-            , fromUTF8
             , fromHex
+            , fromList
+            , fromURI
+            , fromUTF8
             , isBytes
             , isEmpty
             , isHex
             , length
+            , map
+            , or
             , toArray
             , toList
             , toString
+            , xor
             )
