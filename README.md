@@ -12,6 +12,7 @@ or specific function(s):
     import Bytes 
         exposing 
             (Bytes
+            , append
             , empty
             , fromList
             , fromBytes

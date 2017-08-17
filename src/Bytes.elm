@@ -1,6 +1,7 @@
 module Bytes
     exposing
         ( Bytes
+        , append
         , empty
         , fromBytes
         , fromHex
@@ -24,7 +25,7 @@ immutable `Array` type limited to values of `Int` in the range of `0` - `255`.
 
 # Creating Bytes
 
-@docs empty, fromBytes, fromHex, fromList, fromURI, fromUTF8
+@docs empty, fromBytes, fromHex, fromList, fromURI, fromUTF8, append
 
 # Basics
 
@@ -155,6 +156,19 @@ fromUTF8 str =
             |> unescape two twoMultiToSingle
             |> unescape three threeMultiToSingle
             |> fromBytes
+
+
+{-| Put two sequences of bytes together.
+
+    Bytes.append
+        (Bytes.fromBytes "abc")
+        (Bytes.fromBytes "def")
+    --> Bytes.fromBytes "abcdef"
+
+-}
+append : Bytes -> Bytes -> Bytes
+append (ByteArray a) (ByteArray b) =
+    ByteArray <| Array.append a b
 
 
 {-| Determine if each `Char` in a `String` represents a single `Byte`:
