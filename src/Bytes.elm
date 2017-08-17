@@ -1,7 +1,11 @@
 module Bytes
     exposing
-        ( Bytes
+        ( Byte
+        , Bytes
+        , Hex(..)
+        , and
         , append
+        , byte
         , empty
         , fromBytes
         , fromHex
@@ -12,9 +16,12 @@ module Bytes
         , isEmpty
         , isHex
         , length
+        , map
+        , or
         , toArray
         , toList
         , toString
+        , xor
         )
 
 {-| A library for fast immutable `Bytes`. The type is built on top of `Core`'s
@@ -25,7 +32,17 @@ immutable `Array` type limited to values of `Int` in the range of `0` - `255`.
 
 # Creating Bytes
 
-@docs empty, fromBytes, fromHex, fromList, fromURI, fromUTF8, append
+@docs empty, fromBytes, fromHex, fromList, fromURI, fromUTF8
+
+
+# Transforming Bytes
+
+@docs append, map
+
+
+# Working with a single Byte
+
+@docs Byte, Hex, byte, and, or, xor
 
 # Basics
 
@@ -52,6 +69,53 @@ values in the range of `0` - `255`.
 -}
 type Bytes
     = ByteArray (Array Int)
+
+
+{-| A single byte in the range of `0` - `255`.
+-}
+type Byte
+    = Byte Int
+
+
+{-| Hexadecimal digits.
+
+Can be used to create single bytes in a type safe way.
+
+-}
+type Hex
+    = X0
+    | X1
+    | X2
+    | X3
+    | X4
+    | X5
+    | X6
+    | X7
+    | X8
+    | X9
+    | XA
+    | XB
+    | XC
+    | XD
+    | XE
+    | XF
+
+
+{-| Type safe way to create a single byte.
+
+    byte X0 X0 |> Basics.toString
+    --> "Byte 0"
+
+    byte X1 X0 |> Basics.toString
+    --> "Byte 16"
+
+    byte X5 XC |> Basics.toString
+    --> "Byte 92"
+
+-}
+byte : Hex -> Hex -> Byte
+byte a b =
+    Byte <| (hexValue a * 16) + hexValue b
 
 
 {-| Returns an empty `Bytes` container. To be used with `Result.withDefault`:
@@ -169,6 +233,66 @@ fromUTF8 str =
 append : Bytes -> Bytes -> Bytes
 append (ByteArray a) (ByteArray b) =
     ByteArray <| Array.append a b
+
+
+{-| Apply a function to every byte in a byte sequence.
+
+    Bytes.map
+        (Bytes.xor <| byte XF X0)
+        (Bytes.fromHex "00FF0FF0")
+    -->  Bytes.fromHex "F00FFF00"
+
+-}
+map : (Byte -> Byte) -> Bytes -> Bytes
+map f (ByteArray numbers) =
+    ByteArray <|
+        Array.map
+            (Byte
+                >> f
+                >> (\(Byte b) -> b)
+            )
+            numbers
+
+
+
+-- PER BYTE OPERATIONS
+
+
+{-| Bitwise and of two bytes.
+
+    Bytes.and (byte X0 XF) (byte XF XF) |> Basics.toString
+    --> "Byte 15"
+
+-}
+and : Byte -> Byte -> Byte
+and (Byte a) (Byte b) =
+    Byte <| Bitwise.and a b
+
+
+{-| Bitwise or of two bytes.
+
+    Bytes.or (byte X0 XF) (byte XF XF) |> Basics.toString
+    --> "Byte 255"
+
+-}
+or : Byte -> Byte -> Byte
+or (Byte a) (Byte b) =
+    Byte <| Bitwise.or a b
+
+
+{-| Bitwise xor of two bytes.
+
+    Bytes.xor (byte X0 XF) (byte XF XF) |> Basics.toString
+    --> "Byte 240"
+
+-}
+xor : Byte -> Byte -> Byte
+xor (Byte a) (Byte b) =
+    Byte <| Bitwise.xor a b
+
+
+
+-- PREDICATES
 
 
 {-| Determine if each `Char` in a `String` represents a single `Byte`:
@@ -403,3 +527,55 @@ unescape pattern replacement str =
                 |> List.foldl (\c a -> a ++ c) ""
         )
         str
+
+
+hexValue : Hex -> Int
+hexValue h =
+    case h of
+        X0 ->
+            0
+
+        X1 ->
+            1
+
+        X2 ->
+            2
+
+        X3 ->
+            3
+
+        X4 ->
+            4
+
+        X5 ->
+            5
+
+        X6 ->
+            6
+
+        X7 ->
+            7
+
+        X8 ->
+            8
+
+        X9 ->
+            9
+
+        XA ->
+            10
+
+        XB ->
+            11
+
+        XC ->
+            12
+
+        XD ->
+            13
+
+        XE ->
+            14
+
+        XF ->
+            15
