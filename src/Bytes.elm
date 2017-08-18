@@ -18,6 +18,7 @@ module Bytes
         , length
         , map
         , or
+        , repeat
         , toArray
         , toList
         , toString
@@ -27,12 +28,25 @@ module Bytes
 {-| A library for fast immutable `Bytes`. The type is built on top of `Core`'s
 immutable `Array` type limited to values of `Int` in the range of `0` - `255`.
 
+
+## Table of Contents
+
+  - [Bytes](#bytes)
+  - [Creating Bytes](#creating-bytes)
+  - [Transforming Bytes](#transforming-bytes)
+  - [Working with a Single Byte](#working-with-a-single-byte)
+  - [Querying](#querying)
+  - [Conversions](#conversions)
+
+
 # Bytes
+
 @docs Bytes
+
 
 # Creating Bytes
 
-@docs empty, fromBytes, fromHex, fromList, fromURI, fromUTF8
+@docs empty, repeat, fromBytes, fromHex, fromList, fromURI, fromUTF8
 
 
 # Transforming Bytes
@@ -40,15 +54,20 @@ immutable `Array` type limited to values of `Int` in the range of `0` - `255`.
 @docs append, map
 
 
-# Working with a single Byte
+# Working with a Single Byte
+
+Use these functions with `map` to safely transform a `Bytes` collection
+directly (i.e. without converting to and from `Array` or `List`).
 
 @docs Byte, Hex, byte, and, or, xor
 
-# Basics
+
+# Querying
 
 @docs isBytes, isEmpty, isHex, length
 
-# Bytes to Array, List or String
+
+# Conversions
 
 @docs toArray, toList, toString
 
@@ -126,6 +145,20 @@ byte a b =
 empty : Bytes
 empty =
     [] |> Array.fromList |> ByteArray
+
+
+{-| Returns a `Bytes` container with the given `Byte` repeated N times.
+
+    Bytes.repeat 5 (byte X0 X0) |> Ok
+    --> Bytes.fromList [0, 0, 0, 0, 0]
+
+    Bytes.repeat 12 (byte X4 X1) |> Bytes.toString
+    --> "AAAAAAAAAAAA"
+
+-}
+repeat : Int -> Byte -> Bytes
+repeat n (Byte b) =
+    Array.repeat n b |> ByteArray
 
 
 {-| Converts a `String` (`unescape(encodeURI("foo"))`), where each `Char`

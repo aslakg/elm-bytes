@@ -9,8 +9,8 @@ To use, simply import the main namespace:
 
 or specific function(s):
 
-    import Bytes 
-        exposing 
+    import Bytes
+        exposing
             ( Byte
             , Bytes
             , Hex(..)
@@ -29,6 +29,7 @@ or specific function(s):
             , length
             , map
             , or
+            , repeat
             , toArray
             , toList
             , toString
